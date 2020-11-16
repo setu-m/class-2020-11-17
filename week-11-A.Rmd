@@ -1,0 +1,81 @@
+---
+title: "Week 11, Day 1"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(PPBDS.data)
+library(knitr)
+library(gt)
+library(rstanarm)
+library(tidyverse)
+library(tidymodels)
+
+# We will be using the `shaming` tibble from PPBDS.data. Check out ?shaming for
+# details. On Day 1, we will explore the data and review the basics of Bayesian
+# modeling, as covered in chapters 7 -- 9. On Day 2, we will decide on a model
+# to use. On Day 3, we will use that model to answer questions.
+
+# The full shaming data is huge. We will learn more about how to work with such
+# large data sets next semester in Gov 1005: Big Data. Join us! For now, let's
+# sample 10,000 rows and work with that.
+
+set.seed(1005)
+week_11 <- shaming %>% 
+  sample_n(10000)
+```
+
+## Scene 1
+
+**Prompt:** Let's explore the data. You can never look at your data too much!
+
+1) How many voters got which treatments and how many voted in the 2006 primary? 
+
+2) Explore `birth_year`. Does it make sense? If we got handed a new data set for today, would `birth_year` mean the same thing? Might we want to transform it into something different so that our model would "work" with today's data?
+
+3) There are a bunch of voting records. What do they mean? Are they all recorded in the same way? How are they connected to each other? Do we want to use them all?
+
+4) Explore the `no_of_names` variable? How is it distributed? What does it mean? Can we use it in our modeling?
+
+5) Check out `hh_size`. What does it mean? Is the distribution sensible? Might it be a good idea to create a new variable which is more likely to capture an effect of interest? For example, I bet that that there is a big difference between living by yourself and living with other people. I bet that there is much less difference between living with 3 versus 4 people.
+
+6) Are the factor levels for treatment convenient? Try a simple regression and see! How can we change them?
+
+Perform other exploratory data analysis.  What other variables are connected to voting? What other variables are suspect/concerning?
+
+7) Create a new data set, `week_11_clean`, which makes whatever corrections/improvements you think are a good idea. We will use that data set for the next two Scenes.
+
+
+
+## Scene 2
+
+**Prompt:** Having cleaned up our data, we are now ready to start modeling. 
+
+* Let's be disciplined. Split up the data and only use the training data for the rest of today. 
+
+* Use stan_glm() to estimate a model of `primary_06` as a function of `treatment`. Write a sentence or two interpreting the important parameters. (Hint: Try it both with and without an intercept.)
+
+* Use the value of MAD_SD to discuss the magnitude/importance of various coefficients. Refer to this image, courtesy of Tyler.
+
+```{r, echo=FALSE}
+knitr::include_graphics("simko_importance.png")
+```
+
+* What is the causal effect?
+
+* What is the meaning --- in words and mathematically --- of something like `treatmentSelf`? After all, it is not a variable in our data set . . .
+
+* Compare the model with the intercept to the one without. Are they the same? Explain.
+
+
+
+## Scene 3
+
+**Prompt:** Explore a variety models which explain `primary_06` as a function of the variables in our data set. Make sure to explore some interaction terms. 
+
+* Come up with at least two models that a) you like and would be willing to defend and b) are somewhat different from one another. The two most common model types in these situations are "simple" and "full". The former includes a minimum number of variables. The latter errs on the side of variable inclusion and the creation of interaction terms.
+
+* What does it mean if, for example, the coefficient of `treatmentNeighbors` varies across models? 
+* Do things change if we start using all the data? Is there a danger in doing so?
+
